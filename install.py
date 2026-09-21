@@ -24,8 +24,17 @@ def spinner(stop_event, message):
 
 def main():
     if os.geteuid() != 0:
-        print("Error: root privileges required.")
+        print("! No Root !")
         sys.exit(1)
+
+
+    print("Cook Potables!")
+
+    time.sleep(3)
+
+    system("dpkg-reconfigure tzdata")
+
+    system("timedatactl")
 
     message = f"[FETCH] {FETCH_URL}"
 
@@ -48,3 +57,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# 2.0
