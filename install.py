@@ -32,9 +32,9 @@ def main():
 
     time.sleep(3)
 
-    system("dpkg-reconfigure tzdata")
+    os.system("dpkg-reconfigure tzdata")
 
-    system("timedatactl")
+    os.system("timedatactl")
 
     message = f"[FETCH] {FETCH_URL}"
 
@@ -58,4 +58,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# 2.0
+# 3.0
