@@ -5,6 +5,8 @@ import time
 import urllib.request
 import threading
 
+# Cook Potables Installaton Script
+
 FETCH_URL = "https://raw.githubusercontent.com/heydevelopergit/Cook/main/cook.py"
 DEST = "/usr/bin/cook"
 
@@ -54,4 +56,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# 3.0
+# 4.0
