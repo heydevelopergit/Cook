@@ -32,10 +32,6 @@ def main():
 
     time.sleep(3)
 
-    os.system("dpkg-reconfigure tzdata")
-
-    os.system("timedatactl")
-
     message = f"[FETCH] {FETCH_URL}"
 
     stop = threading.Event()
