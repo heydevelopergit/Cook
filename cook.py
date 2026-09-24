@@ -58,6 +58,31 @@ def save_db(db):
         json.dump(db, f, indent=2)
 
 
+def parse_manifest(content):
+    meta = {"name": None, "version": None, "author": None, "description": None}
+    for line in content.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        key = key.strip().lower()
+        val = val.strip()
+        if key in meta:
+            meta[key] = val
+    return meta
+
+
+def truncate(text, width):
+    if text is None:
+        return "-"
+    text = str(text)
+    if len(text) <= width:
+        return text
+    return text[: width - 1] + "…"
+
+
 def fetch_remote_packages():
     try:
         req = urllib.request.Request(API_URL, headers={"User-Agent": "cook"})
@@ -134,8 +159,8 @@ def cmd_install(package):
     with open(list_path, "r", encoding="utf-8") as f:
         content = f.read().strip()
 
-    match = re.search(r"name=(.+)", content)
-    if not match:
+    meta = parse_manifest(content)
+    if not meta["name"]:
         stop_event.set()
         spinner_thread.join()
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -143,7 +168,7 @@ def cmd_install(package):
         print("Error: 'name=' not found in 'list' file.")
         sys.exit(1)
 
-    install_name = match.group(1).strip()
+    install_name = meta["name"]
 
     stop_event.set()
     spinner_thread.join()
@@ -163,6 +188,9 @@ def cmd_install(package):
     db = load_db()
     db[package] = {
         "name": install_name,
+        "version": meta["version"] or "-",
+        "author": meta["author"] or "-",
+        "description": meta["description"] or "-",
         "path": dest,
         "installed_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -214,9 +242,16 @@ def cmd_list():
     if not db:
         print("No packages installed via cook.")
         return
-    print(f"{'PACKAGE':<20} {'BINARY':<20} {'INSTALLED AT'}")
+    print(f"{'PACKAGE':<20} {'VERSION':<10} {'AUTHOR':<15} {'BINARY':<15} {'DESCRIPTION':<30} {'INSTALLED AT'}")
     for pkg, info in sorted(db.items()):
-        print(f"{pkg:<20} {info.get('name','?'):<20} {info.get('installed_at','?')}")
+        print(
+            f"{truncate(pkg, 20):<20} "
+            f"{truncate(info.get('version', '-'), 10):<10} "
+            f"{truncate(info.get('author', '-'), 15):<15} "
+            f"{truncate(info.get('name', '?'), 15):<15} "
+            f"{truncate(info.get('description', '-'), 30):<30} "
+            f"{info.get('installed_at', '?')}"
+        )
 
 
 def print_usage():
@@ -268,4 +303,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# 1.0
+# 1.1
