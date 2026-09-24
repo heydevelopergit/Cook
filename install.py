@@ -30,9 +30,7 @@ def main():
         sys.exit(1)
 
 
-    print("Cook Potables!")
-
-    time.sleep(3)
+    print("Cook Potables")
 
     message = f"[FETCH] {FETCH_URL}"
 
@@ -56,4 +54,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# 4.0
+# 4.1
