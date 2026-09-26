@@ -9,6 +9,7 @@ import urllib.request
 import urllib.error
 import re
 import threading
+import subprocess
 from datetime import datetime, timezone
 
 REPO_OWNER = "heydevelopergit"
@@ -180,10 +181,28 @@ def cmd_install(package):
         print("Error: 'main' executable missing in archive.")
         sys.exit(1)
 
+    preinstall_script = os.path.join(tmp_dir, "preinstallation")
+    if os.path.isfile(preinstall_script):
+        rc = subprocess.call(["bash", "preinstallation"], cwd=tmp_dir)
+        if rc != 0:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            os.remove(zip_name)
+            print(f"preinstallation script failed with exit code {rc}.")
+            sys.exit(rc)
+
     dest = f"/usr/bin/{install_name}"
     print(f"Installing {install_name}...")
     shutil.copy2(main_src, dest)
     os.chmod(dest, 0o755)
+
+    install_script = os.path.join(tmp_dir, "installation")
+    if os.path.isfile(install_script):
+        rc = subprocess.call(["bash", "installation"], cwd=tmp_dir)
+        if rc != 0:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            os.remove(zip_name)
+            print(f"installation script failed with exit code {rc}.")
+            sys.exit(rc)
 
     db = load_db()
     db[package] = {
@@ -303,4 +322,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# 1.1
+# 1.2
