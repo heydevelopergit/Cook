@@ -5,7 +5,3 @@
 
 # Install
 curl https://raw.githubusercontent.com/heydevelopergit/Cook/refs/heads/main/install.py | sudo python3
-
-## Preview
-
-![](https://gitlab.com/cookgitlab/cookparts/-/raw/main/cook-1.mp4?ref_type=heads)
