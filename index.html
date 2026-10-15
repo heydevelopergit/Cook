@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cook Potables</title>
+    <style>
+        body {
+            background-color: #E8E2D8;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+        h1 {
+            color: #1f2937;
+            font-size: clamp(28px, 6vw, 48px);
+            letter-spacing: 3px;
+            margin: 0 0 40px 0;
+        }
+        .installation h2,
+        .preview h2 {
+            color: #1f2937;
+            font-size: clamp(20px, 4vw, 28px);
+        }
+        .install-wrapper {
+            position: relative;
+        }
+        .code-block {
+            background: #f3f4f6;
+            border: 2px solid #1f2937;
+            border-radius: 6px;
+            padding: 16px 20px;
+            font-family: 'SF Mono', Monaco, monospace;
+            overflow-x: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .code-block code {
+            font-size: clamp(12px, 2.5vw, 15px);
+            word-break: break-all;
+            flex: 1;
+        }
+        .copy-btn {
+            background: white;
+            border: 2px solid #1f2937;
+            border-radius: 6px;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background: #e5e7eb;
+        }
+        .copy-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #1f2937;
+        }
+        .copy-toast {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 0;
+            background: white;
+            border: 2px solid #16a34a;
+            color: #16a34a;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transform: scale(0.5);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .copy-toast svg {
+            width: 16px;
+            height: 16px;
+            stroke: #16a34a;
+        }
+        .copy-toast::after {
+            content: '';
+            position: absolute;
+            bottom: -7px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-right: 2px solid #16a34a;
+            border-bottom: 2px solid #16a34a;
+            transform: rotate(45deg);
+        }
+        .copy-toast.show {
+            animation: pop-in 0.3s ease-out forwards, pop-out 0.3s ease-in 1.2s forwards;
+        }
+        @keyframes pop-in {
+            from {
+                opacity: 0;
+                transform: scale(0.5) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        @keyframes pop-out {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.5) translateY(-10px);
+            }
+        }
+        .preview video {
+            max-width: 100%;
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+        }
+        .github-fork {
+            position: fixed;
+            top: clamp(5px, 2vw, 14px);
+            right: clamp(-45px, -8vw, -32px);
+            transform: rotate(45deg);
+            background: #9ca3af;
+            color: #1f2937;
+            padding: clamp(1px, 0.4vw, 3px) clamp(25px, 7vw, 45px);
+            font-size: clamp(6px, 1.6vw, 10px);
+            font-weight: bold;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            z-index: 100;
+            white-space: nowrap;
+        }
+        .github-fork:hover {
+            background: #6b7280;
+            color: white;
+        }
+        .github-fork-btn {
+            display: none;
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            background: #000000;
+            color: white;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            white-space: nowrap;
+        }
+        .github-fork-btn:hover {
+            background: #374151;
+        }
+        @media (max-width: 320px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 321px) and (max-width: 360px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 361px) and (max-width: 375px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 376px) and (max-width: 390px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 391px) and (max-width: 393px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 394px) and (max-width: 414px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 415px) and (max-width: 428px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 429px) and (max-width: 430px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 431px) and (max-width: 480px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (min-width: 481px) and (max-width: 540px) {
+            .github-fork { display: none; }
+            .github-fork-btn { display: inline-block; }
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            h1 {
+                margin-bottom: 24px;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+            .copy-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+            .copy-toast {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <a class="github-fork" id="github-fork" href="https://github.com/heydevelopergit/cookparts/fork">Fork me on GitHub!</a>
+    <button class="github-fork-btn" onclick="toggleFork()">Show Fork me on Github (DANGEROUS!)</button>
+
+    <h1>Cook Potables</h1>
+
+    <div class="installation">
+        <h2>Installation:</h2>
+        <div class="install-wrapper">
+            <div class="code-block">
+                <code id="install-cmd">curl https://raw.githubusercontent.com/heydevelopergit/Cook/refs/heads/main/install.py | sudo python3</code>
+                <button class="copy-btn" onclick="copyInstall()" title="Копировать">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="copy-toast" id="copy-toast">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6L9 17l-5-5"></path>
+                </svg>
+                Copied
+            </div>
+        </div>
+    </div>
+
+    <div class="preview">
+        <h2>Preview</h2>
+        <video src="https://gitlab.com/cookgitlab/cookparts/-/raw/main/cook-1.mp4" controls></video>
+    </div>
+
+    <script>
+        function showToast() {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.remove('show');
+            void toast.offsetWidth;
+            toast.classList.add('show');
+        }
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+            showToast();
+        }
+        function copyInstall() {
+            const cmd = document.getElementById('install-cmd').textContent;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(cmd).then(showToast).catch(() => fallbackCopy(cmd));
+            } else {
+                fallbackCopy(cmd);
+            }
+        }
+        function toggleFork() {
+            const fork = document.getElementById('github-fork');
+            const btn = document.querySelector('.github-fork-btn');
+            if (fork.style.display === 'block') {
+                fork.style.display = 'none';
+                btn.style.display = 'inline-block';
+            } else {
+                fork.style.display = 'block';
+                btn.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
